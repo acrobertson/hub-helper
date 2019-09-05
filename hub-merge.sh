@@ -1,10 +1,21 @@
 #!/bin/bash
 
+usage() {
+    echo "Usage: hub-merge [-f]. Run with -f to push the merge commit and close the PR" 1>&2
+}
+
 NUM_PRS=`hub pr list | wc -l`
 if [ $NUM_PRS -gt 1 ]; then
     echo "Error: There are multiple open pull requests" 1>&2
     exit 1
 fi
+
+while getopts ":f" opt; do
+    case ${opt} in
+        f) FORCE=1;;
+        \? ) usage; exit 1
+    esac
+done
 
 PR_URL=`hub pr list -f "%U"`
 PR_NUM=`hub pr list -f "%I"`
@@ -37,4 +48,8 @@ hub merge $PR_URL
 git fetch $REMOTE refs/pull/${PR_NUM}/head
 git merge FETCH_HEAD --no-ff -m "$PR_MSG"
 
-echo "Merge complete: Push this branch to the remote repository to close the pull request" 1>&2
+if [ $FORCE -eq 1 ]; then
+    git push $REMOTE
+else
+    echo "Merge complete: Push this branch to the remote repository to close the pull request" 1>&2
+fi
