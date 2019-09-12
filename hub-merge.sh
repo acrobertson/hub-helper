@@ -45,6 +45,7 @@ else
     fi
 fi
 
+git checkout master
 hub merge $PR_URL
 git fetch $REMOTE refs/pull/${PR_NUM}/head
 git merge FETCH_HEAD --no-ff -m "$PR_MSG"
