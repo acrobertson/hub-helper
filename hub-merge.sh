@@ -10,6 +10,7 @@ if [ $NUM_PRS -gt 1 ]; then
     exit 1
 fi
 
+FORCE=0
 while getopts ":f" opt; do
     case ${opt} in
         f) FORCE=1;;
